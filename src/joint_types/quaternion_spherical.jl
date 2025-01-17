@@ -24,12 +24,12 @@ has_fixed_subspaces(jt::QuaternionSpherical) = true
 isfloating(::Type{<:QuaternionSpherical}) = false
 
 @propagate_inbounds function rotation(jt::QuaternionSpherical, q::AbstractVector, normalize::Bool = true)
-    QuatRotation(q[1], q[2], q[3], q[4], normalize)
+    Quat(q[1], q[2], q[3], q[4], normalize)
 end
 
 @propagate_inbounds function set_rotation!(q::AbstractVector, jt::QuaternionSpherical, rot::Rotation{3})
     T = eltype(rot)
-    quat = convert(QuatRotation{T}, rot)
+    quat = convert(Quat{T}, rot)
     w, x, y, z = Rotations.params(quat)
     q[1] = w
     q[2] = x
@@ -80,7 +80,7 @@ end
 
 @propagate_inbounds function configuration_derivative_to_velocity_adjoint!(fq, jt::QuaternionSpherical, q::AbstractVector, fv)
     quatnorm = sqrt(q[1]^2 + q[2]^2 + q[3]^2 + q[4]^2) # TODO: make this nicer
-    quat = QuatRotation(q[1] / quatnorm, q[2] / quatnorm, q[3] / quatnorm, q[4] / quatnorm, false)
+    quat = Quat(q[1] / quatnorm, q[2] / quatnorm, q[3] / quatnorm, q[4] / quatnorm, false)
     fq .= (velocity_jacobian(angular_velocity_in_body, quat)' * fv) ./ quatnorm
     nothing
 end
@@ -104,13 +104,13 @@ end
 
 @propagate_inbounds function zero_configuration!(q::AbstractVector, jt::QuaternionSpherical)
     T = eltype(q)
-    set_rotation!(q, jt, one(QuatRotation{T}))
+    set_rotation!(q, jt, one(Quat{T}))
     nothing
 end
 
 @propagate_inbounds function rand_configuration!(q::AbstractVector, jt::QuaternionSpherical)
     T = eltype(q)
-    set_rotation!(q, jt, rand(QuatRotation{T}))
+    set_rotation!(q, jt, rand(Quat{T}))
     nothing
 end
 
@@ -148,7 +148,7 @@ end
 
 @propagate_inbounds function global_coordinates!(q::AbstractVector, jt::QuaternionSpherical, q0::AbstractVector, ϕ::AbstractVector)
     quat0 = rotation(jt, q0, false)
-    quat = quat0 * QuatRotation(RotationVec(ϕ[1], ϕ[2], ϕ[3]))
+    quat = quat0 * Quat(RotationVec(ϕ[1], ϕ[2], ϕ[3]))
     set_rotation!(q, jt, quat)
     nothing
 end

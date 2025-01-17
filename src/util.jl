@@ -44,7 +44,7 @@ end
 ## VectorSegment: type of a view of a vector
 const VectorSegment{T} = SubArray{T,1,Array{T, 1},Tuple{UnitRange{Int64}},true} # TODO: a bit too specific
 
-function quatnorm(quat::QuatRotation)
+function quatnorm(quat::Quat)
     w, x, y, z = Rotations.params(quat)
     sqrt(w^2 + x^2 + y^2 + z^2)
 end

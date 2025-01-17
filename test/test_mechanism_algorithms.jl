@@ -242,10 +242,10 @@ end
                 @test velocity(x, joint)[1] == vj
             end
             if joint_type(joint) isa QuaternionSpherical
-                quat = rand(QuatRotation{Float64})
+                quat = rand(Quat{Float64})
                 set_configuration!(x, joint, quat)
                 tf = RigidBodyDynamics.joint_transform(joint, configuration(x, joint))
-                @test QuatRotation(rotation(tf)) ≈ quat atol = 1e-12
+                @test Quat(rotation(tf)) ≈ quat atol = 1e-12
             end
             if joint_type(joint) isa SinCosRevolute
                 qj = rand()
@@ -886,7 +886,7 @@ end
         for joint_k = tree_joints(state_orig.mechanism)
             joint_type_k = joint_type(joint_k)
             if isa(joint_type_k, SPQuatFloating)
-                RigidBodyDynamics.set_rotation!(state_orig.q[joint_k], joint_type_k, ModifiedRodriguesParam(QuatRotation(-0.5, randn(), randn(), randn())))
+                RigidBodyDynamics.set_rotation!(state_orig.q[joint_k], joint_type_k, ModifiedRodriguesParam(Quat(-0.5, randn(), randn(), randn())))
             end
         end
         setdirty!(state_orig)

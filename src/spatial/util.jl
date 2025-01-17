@@ -124,7 +124,7 @@ function quaternion_derivative end
 function spquat_derivative end
 function angular_velocity_in_body end
 
-@inline function velocity_jacobian(::typeof(quaternion_derivative), q::QuatRotation)
+@inline function velocity_jacobian(::typeof(quaternion_derivative), q::Quat)
     w, x, y, z = Rotations.params(q)
     (@SMatrix [
         -x -y -z;
@@ -134,13 +134,13 @@ function angular_velocity_in_body end
 end
 
 @inline function velocity_jacobian(::typeof(spquat_derivative), q::ModifiedRodriguesParam)
-    quat = QuatRotation(q)
+    quat = Quat(q)
     dQuat_dW = velocity_jacobian(quaternion_derivative, quat)
     dSPQuat_dQuat = Rotations.jacobian(ModifiedRodriguesParam, quat)
     dSPQuat_dQuat * dQuat_dW
 end
 
-@inline function velocity_jacobian(::typeof(angular_velocity_in_body), q::QuatRotation)
+@inline function velocity_jacobian(::typeof(angular_velocity_in_body), q::Quat)
     w, x, y, z = Rotations.params(q)
     2 * @SMatrix [
     -x  w  z -y;
@@ -149,13 +149,13 @@ end
 end
 
 @inline function velocity_jacobian(::typeof(angular_velocity_in_body), q::ModifiedRodriguesParam)
-    quat = QuatRotation(q)
+    quat = Quat(q)
     dW_dQuat = velocity_jacobian(angular_velocity_in_body, quat)
-    dQuat_dSPQuat = Rotations.jacobian(QuatRotation, q)
+    dQuat_dSPQuat = Rotations.jacobian(Quat, q)
     dW_dQuat * dQuat_dSPQuat
 end
 
-@inline function quaternion_derivative(q::QuatRotation, angular_velocity_in_body::AbstractVector)
+@inline function quaternion_derivative(q::Quat, angular_velocity_in_body::AbstractVector)
     @boundscheck length(angular_velocity_in_body) == 3 || error("size mismatch")
     velocity_jacobian(quaternion_derivative, q) * angular_velocity_in_body
 end
@@ -165,7 +165,7 @@ end
     velocity_jacobian(spquat_derivative, q) * angular_velocity_in_body
 end
 
-@inline function angular_velocity_in_body(q::QuatRotation, quat_derivative::AbstractVector)
+@inline function angular_velocity_in_body(q::Quat, quat_derivative::AbstractVector)
     @boundscheck length(quat_derivative) == 4 || error("size mismatch")
     velocity_jacobian(angular_velocity_in_body, q) * quat_derivative
 end

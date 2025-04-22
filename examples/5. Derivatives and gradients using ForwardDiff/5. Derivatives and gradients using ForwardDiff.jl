@@ -67,7 +67,7 @@ A = momentum_matrix(float64state)
 
 # Ignoring the fact that we have a specialized method available, let's look at the performance of using `ForwardDiff.jacobian`.
 
-using BenchmarkTools
+# using BenchmarkTools
 @benchmark ForwardDiff.jacobian($momentum_vec, $v)
 
 # That's not great. Note all the allocations. We can do better by making the following modifications:

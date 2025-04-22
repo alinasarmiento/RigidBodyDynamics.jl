@@ -6,7 +6,7 @@ using RigidBodyDynamics
 using RigidBodyDynamics.OdeIntegrators
 using Random
 using Profile
-using BenchmarkTools
+# using BenchmarkTools
 
 const ScalarType = Float64
 # const ScalarType = Float32
